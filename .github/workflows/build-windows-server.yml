@@ -1,0 +1,80 @@
+name: Build RustDesk Windows Server
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Target release tag
+        required: true
+        default: 2026-0703-0841
+      source_ref:
+        description: Source git ref for ops-platform server code
+        required: true
+        default: main
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows-server:
+    runs-on: windows-2022
+    steps:
+      - name: Checkout ops-platform source
+        uses: actions/checkout@v4
+        with:
+          repository: sysadmin846/wangli-control-console
+          ref: ${{ inputs.source_ref }}
+          submodules: recursive
+          path: source
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.90.0
+          targets: x86_64-pc-windows-msvc
+
+      - name: Build hbbs and hbbr
+        shell: pwsh
+        working-directory: source/platform/modules/Remote/rustdesk-server
+        run: |
+          cargo build --release --all-features --target x86_64-pc-windows-msvc
+
+      - name: Package server zip
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $out = Join-Path $PWD 'dist/rustdesk-server-windows-x86_64'
+          New-Item -ItemType Directory -Force -Path $out | Out-Null
+          Copy-Item 'source/platform/modules/Remote/rustdesk-server/target/x86_64-pc-windows-msvc/release/hbbs.exe' $out
+          Copy-Item 'source/platform/modules/Remote/rustdesk-server/target/x86_64-pc-windows-msvc/release/hbbr.exe' $out
+          if (Test-Path 'source/platform/modules/Remote/rustdesk-server/target/x86_64-pc-windows-msvc/release/rustdesk-utils.exe') {
+            Copy-Item 'source/platform/modules/Remote/rustdesk-server/target/x86_64-pc-windows-msvc/release/rustdesk-utils.exe' $out
+          }
+          @'
+          RustDesk Windows Server Package
+
+          Files:
+          - hbbs.exe: ID/rendezvous server
+          - hbbr.exe: relay server
+          - rustdesk-utils.exe: utility binary, if included
+
+          Quick start:
+          1. Extract this zip on Windows Server.
+          2. Open PowerShell in this folder.
+          3. Run hbbs.exe and hbbr.exe, or install them as Windows services with your normal service manager.
+
+          Ports normally required:
+          - 21115 TCP
+          - 21116 TCP/UDP
+          - 21117 TCP
+          - 21118 TCP, if web client/API is used
+          - 21119 TCP, if web client/API is used
+          '@ | Set-Content -Encoding UTF8 (Join-Path $out 'README-WINDOWS-SERVER.txt')
+          Compress-Archive -Path "$out/*" -DestinationPath 'dist/rustdesk-server-windows-x86_64.zip' -Force
+
+      - name: Upload to release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.release_tag }}
+          files: dist/rustdesk-server-windows-x86_64.zip
