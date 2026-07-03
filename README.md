@@ -13,11 +13,7 @@
 
 ## 已上传文件
 
-当前已上传 macOS Apple Silicon 安装包：
-
-```text
-rustdesk-1.4.4-aarch64-aarch64.dmg
-```
+- `rustdesk-1.4.4-aarch64-aarch64.dmg`
 
 校验值见：
 

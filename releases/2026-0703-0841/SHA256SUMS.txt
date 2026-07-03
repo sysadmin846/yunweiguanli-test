@@ -1,1 +1,1 @@
-e16d14b6c2ed07a9d2a833c3c55888275af10bd6706fc57fb68d7b407127b382  /tmp/rs-client-28630738923-release/rustdesk-1.4.4-aarch64-aarch64.dmg
+e16d14b6c2ed07a9d2a833c3c55888275af10bd6706fc57fb68d7b407127b382  /tmp/rs-client-28630738923-sync/rustdesk-1.4.4-aarch64-aarch64.dmg

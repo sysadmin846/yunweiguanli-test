@@ -12,12 +12,12 @@
 
 | 文件 | 说明 |
 | --- | --- |
-| `rustdesk-1.4.4-aarch64-aarch64.dmg` | macOS Apple Silicon / arm64 安装包 |
+| `rustdesk-1.4.4-aarch64-aarch64.dmg` | RustDesk 客户端构建产物 |
 | `SHA256SUMS.txt` | 已上传安装包的 SHA256 校验值 |
 
 ## 构建状态
 
-当前已上传源 Release 中已经生成的 macOS Apple Silicon 安装包。源 GitHub Actions Run 可能仍在继续生成其他平台产物；Windows 或 macOS x86_64 产物生成后，可继续追加到同一个目标 Release。
+本目录记录当前已从源 Release 同步到目标 Release 的文件。若源 GitHub Actions 后续继续发布新平台产物，可再次同步追加到同一个目标 Release。
 
 ## 使用说明
 
