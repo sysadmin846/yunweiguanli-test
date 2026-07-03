@@ -1,0 +1,29 @@
+# RustDesk Server 编译环境工具链 (持久化环境)
+FROM rust:alpine
+
+WORKDIR /build
+
+# 安装基础构建依赖
+RUN apk add --no-cache \
+    musl-dev \
+    file \
+    make \
+    sqlite \
+    sqlite-dev \
+    bash \
+    rsync
+
+# 设置代理环境变量 (根据部署时的网络环境可覆盖)
+ENV HTTP_PROXY=http://127.0.0.1:7890
+ENV HTTPS_PROXY=http://127.0.0.1:7890
+
+# sqlx 编译所需的数据库路径准备
+ENV DATABASE_URL=sqlite:///tmp/db_v2.sqlite3
+RUN sqlite3 /tmp/db_v2.sqlite3 "CREATE TABLE IF NOT EXISTS peer (guid BLOB PRIMARY KEY NOT NULL, id VARCHAR(100) NOT NULL, uuid BLOB NOT NULL, pk BLOB NOT NULL, created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, user BLOB, status TINYINT, note VARCHAR(300), info TEXT NOT NULL);"
+
+# 设置 Cargo 环境变量以支持增量编译和缓存
+ENV CARGO_HOME=/cargo_home
+ENV CARGO_TARGET_DIR=/build/target
+
+# 默认命令：进入交互模式或打印版本
+CMD ["rustc", "--version"]

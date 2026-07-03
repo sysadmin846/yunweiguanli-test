@@ -1,0 +1,30 @@
+# 用于编译 hbbs/hbbr 的 Docker 镜像
+# 使用 Alpine 镜像，自带 musl
+
+FROM rust:alpine
+
+WORKDIR /build
+
+# 设置代理（配合 --network host 使用）
+ENV HTTP_PROXY=http://127.0.0.1:7890
+ENV HTTPS_PROXY=http://127.0.0.1:7890
+ENV http_proxy=http://127.0.0.1:7890
+ENV https_proxy=http://127.0.0.1:7890
+
+# 设置数据库 URL 用于 sqlx 编译时验证
+ENV DATABASE_URL=sqlite:///tmp/db_v2.sqlite3
+
+# 安装构建依赖
+RUN apk add --no-cache musl-dev file make sqlite sqlite-dev
+
+# 创建数据库和表结构
+RUN sqlite3 /tmp/db_v2.sqlite3 "CREATE TABLE IF NOT EXISTS peer (guid BLOB PRIMARY KEY NOT NULL, id VARCHAR(100) NOT NULL, uuid BLOB NOT NULL, pk BLOB NOT NULL, created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, user BLOB, status TINYINT, note VARCHAR(300), info TEXT NOT NULL);"
+
+# 复制源码并编译
+COPY . .
+
+# 编译 hbbs 和 hbbr
+RUN cargo build --release --bin hbbs --bin hbbr
+
+# 输出编译产物位置
+RUN ls -la target/release/hbbs target/release/hbbr

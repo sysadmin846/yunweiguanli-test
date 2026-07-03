@@ -19,14 +19,10 @@ jobs:
   build-windows-server:
     runs-on: windows-2022
     steps:
-      - name: Checkout ops-platform source
+      - name: Checkout package repository
         uses: actions/checkout@v4
         with:
-          repository: sysadmin846/wangli-control-console
-          ref: ${{ inputs.source_ref }}
           submodules: recursive
-          path: source
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -36,7 +32,7 @@ jobs:
 
       - name: Build hbbs and hbbr
         shell: pwsh
-        working-directory: source/platform/modules/Remote/rustdesk-server
+        working-directory: sources/rustdesk-server
         run: |
           cargo build --release --all-features --target x86_64-pc-windows-msvc
 
@@ -46,10 +42,10 @@ jobs:
           $ErrorActionPreference = 'Stop'
           $out = Join-Path $PWD 'dist/rustdesk-server-windows-x86_64'
           New-Item -ItemType Directory -Force -Path $out | Out-Null
-          Copy-Item 'source/platform/modules/Remote/rustdesk-server/target/x86_64-pc-windows-msvc/release/hbbs.exe' $out
-          Copy-Item 'source/platform/modules/Remote/rustdesk-server/target/x86_64-pc-windows-msvc/release/hbbr.exe' $out
-          if (Test-Path 'source/platform/modules/Remote/rustdesk-server/target/x86_64-pc-windows-msvc/release/rustdesk-utils.exe') {
-            Copy-Item 'source/platform/modules/Remote/rustdesk-server/target/x86_64-pc-windows-msvc/release/rustdesk-utils.exe' $out
+          Copy-Item 'sources/rustdesk-server/target/x86_64-pc-windows-msvc/release/hbbs.exe' $out
+          Copy-Item 'sources/rustdesk-server/target/x86_64-pc-windows-msvc/release/hbbr.exe' $out
+          if (Test-Path 'sources/rustdesk-server/target/x86_64-pc-windows-msvc/release/rustdesk-utils.exe') {
+            Copy-Item 'sources/rustdesk-server/target/x86_64-pc-windows-msvc/release/rustdesk-utils.exe' $out
           }
           @'
           RustDesk Windows Server Package
