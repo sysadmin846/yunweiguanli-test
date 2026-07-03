@@ -34,7 +34,7 @@ jobs:
         shell: pwsh
         working-directory: sources/rustdesk-server
         run: |
-          python - <<'PY'
+          @'
           import sqlite3
           conn = sqlite3.connect('sqlx-compile.sqlite3')
           conn.executescript('''
@@ -55,7 +55,8 @@ jobs:
           create index if not exists index_peer_status on peer (status);
           ''')
           conn.close()
-          PY
+          '@ | Set-Content -Encoding UTF8 create_sqlx_compile_db.py
+          python create_sqlx_compile_db.py
 
       - name: Build hbbs and hbbr
         shell: pwsh
