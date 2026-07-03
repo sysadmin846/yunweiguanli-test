@@ -4,18 +4,20 @@
 
 - 源仓库：`https://github.com/sysadmin846/rs-client`
 - Actions Run：`https://github.com/sysadmin846/rs-client/actions/runs/28630738923`
+- 源 Release：`https://github.com/sysadmin846/rs-client/releases/tag/2026-0703-0841-12`
+- 目标 Release：`https://github.com/sysadmin846/yunweiguanli-test/releases/tag/2026-0703-0841`
 - Run 标题：`RustDesk Build #12 | 2026-0703-0841 | @sysadmin846`
 
-## 当前状态
+## 已上传文件
 
-截至本说明创建时，Actions 仍在运行，最终客户端安装包尚未全部生成。
+| 文件 | 说明 |
+| --- | --- |
+| `rustdesk-1.4.4-aarch64-aarch64.dmg` | macOS Apple Silicon / arm64 安装包 |
+| `SHA256SUMS.txt` | 已上传安装包的 SHA256 校验值 |
 
-已完成的前置阶段：
+## 构建状态
 
-- `generate-bridge`
-- `build-RustDeskTempTopMostWindow`
-
-最终产物生成后，会继续上传到本目录或同名 Release。
+当前已上传源 Release 中已经生成的 macOS Apple Silicon 安装包。源 GitHub Actions Run 可能仍在继续生成其他平台产物；Windows 或 macOS x86_64 产物生成后，可继续追加到同一个目标 Release。
 
 ## 使用说明
 
